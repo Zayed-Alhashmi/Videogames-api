@@ -7,8 +7,60 @@ from .serializers import GameSerializer, ReviewSerializer
 class GameList(APIView):
     def get(self, request):
         games = Game.objects.all()
+
+        genre = request.query_params.get('genre', None)
+        platform = request.query_params.get('platform', None)
+        age_rating = request.query_params.get('age_rating', None)
+        developer = request.query_params.get('developer', None)
+        year = request.query_params.get('year', None)
+        min_score = request.query_params.get('min_score', None)
+        max_score = request.query_params.get('max_score', None)
+        search = request.query_params.get('search', None)
+
+        if genre:
+            games = games.filter(genre__icontains=genre)
+        if platform:
+            games = games.filter(platform__icontains=platform)
+        if age_rating:
+            games = games.filter(age_rating__icontains=age_rating)
+        if developer:
+            games = games.filter(developer__icontains=developer)
+        if year:
+            games = games.filter(release_year=year)
+        if min_score:
+            try:
+                games = games.filter(critic_score__gte=float(min_score))
+            except ValueError:
+                return Response(
+                    {'error': 'min_score must be a number'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        if max_score:
+            try:
+                games = games.filter(critic_score__lte=float(max_score))
+            except ValueError:
+                return Response(
+                    {'error': 'max_score must be a number'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        if search:
+            games = games.filter(title__icontains=search)
+
         serializer = GameSerializer(games, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            'count': games.count(),
+            'filters_applied': {
+                'genre': genre,
+                'platform': platform,
+                'age_rating': age_rating,
+                'developer': developer,
+                'year': year,
+                'min_score': min_score,
+                'max_score': max_score,
+                'search': search
+            },
+            'results': serializer.data
+        }, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = GameSerializer(data=request.data)
