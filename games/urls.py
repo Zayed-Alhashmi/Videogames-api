@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import GameList, GameDetail, ReviewList, GameRecommendation
+from .views import GameList, GameDetail, ReviewList, GameRecommendation, GameMetadata
 
 urlpatterns = [
     path('games/', GameList.as_view(), name='game-list'),
     path('games/<int:pk>/', GameDetail.as_view(), name='game-detail'),
     path('games/<int:pk>/reviews/', ReviewList.as_view(), name='review-list'),
     path('recommend/', GameRecommendation.as_view(), name='game-recommend'),
+    path('metadata/', GameMetadata.as_view(), name='game-metadata'),
 ]

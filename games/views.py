@@ -165,3 +165,25 @@ class GameRecommendation(APIView):
             'recommendations': serializer.data
         }, status=status.HTTP_200_OK)
 
+class GameMetadata(APIView):
+    def get(self, request):
+        genres = Game.objects.exclude(
+            genre__isnull=True
+        ).values_list('genre', flat=True).distinct().order_by('genre')
+
+        platforms = Game.objects.exclude(
+            platform__isnull=True
+        ).values_list('platform', flat=True).distinct().order_by('platform')
+
+        age_ratings = Game.objects.exclude(
+            age_rating__isnull=True
+        ).values_list('age_rating', flat=True).distinct().order_by('age_rating')
+
+        return Response({
+            'message': 'Available filters for the Video Games API',
+            'genres': list(genres),
+            'platforms': list(platforms),
+            'age_ratings': list(age_ratings),
+        }, status=status.HTTP_200_OK)
+
+
