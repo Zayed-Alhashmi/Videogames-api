@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Games Library API</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #1a2e4a;
+    --teal: #0d9488;
+    --teal-light: #ccfbf1;
+    --teal-mid: #5eead4;
+    --slate: #475569;
+    --slate-light: #94a3b8;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo {
+    width: 32px;
+    height: 32px;
+    background: var(--navy);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-logo span {
+    color: var(--teal-mid);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .nav-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .nav-links {
+    display: flex;
+    gap: 4px;
+  }
+  .nav-link {
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--slate);
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: all 0.15s;
+  }
+  .nav-link:hover { background: var(--bg); color: var(--navy); }
+  .nav-link.active { background: var(--teal-light); color: var(--teal); }
+
+  /* HERO */
+  .hero {
+    background: var(--navy);
+    padding: 64px 24px;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(13,148,136,0.2);
+    border: 1px solid rgba(94,234,212,0.3);
+    color: var(--teal-mid);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    font-family: 'DM Mono', monospace;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+  }
+  .hero p {
+    font-size: 16px;
+    color: #94a3b8;
+    max-width: 560px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--teal-mid);
+    font-family: 'DM Mono', monospace;
+  }
+  .hero-stat-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--teal); color: white; }
+  .btn-primary:hover { background: #0f766e; transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-outline { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); }
+  .btn-outline:hover { background: rgba(255,255,255,0.1); }
+  .btn-sm { padding: 7px 14px; font-size: 13px; }
+  .btn-teal { background: var(--teal); color: white; }
+  .btn-teal:hover { background: #0f766e; }
+  .btn-navy { background: var(--navy); color: white; }
+  .btn-navy:hover { background: #243857; }
+
+  /* MAIN CONTENT */
+  .main { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+  /* SECTIONS */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-header {
+    margin-bottom: 28px;
+  }
+  .section-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .section-header p {
+    font-size: 14px;
+    color: var(--slate);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .game-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    transition: all 0.15s;
+  }
+  .game-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .game-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .game-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+  .tag-teal { background: var(--teal-light); color: var(--teal); }
+  .tag-navy { background: #e0e7ff; color: #3730a3; }
+  .tag-slate { background: #f1f5f9; color: var(--slate); }
+  .tag-orange { background: #fff7ed; color: #c2410c; }
+  .game-card-score {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .score-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+  .score-num {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+    min-width: 30px;
+    text-align: right;
+  }
+
+  /* FILTERS */
+  .filters-bar {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .filter-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+  .filter-group input, .filter-group select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--navy);
+    background: var(--bg);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .filter-group input:focus, .filter-group select:focus {
+    border-color: var(--teal);
+    background: var(--white);
+  }
+  .filters-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .results-info {
+    font-size: 13px;
+    color: var(--slate);
+  }
+  .results-info strong { color: var(--navy); }
+
+  /* PAGINATION */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .page-btn {
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--white);
+    color: var(--navy);
+    transition: all 0.15s;
+  }
+  .page-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .page-btn.active { background: var(--teal); color: white; border-color: var(--teal); }
+  .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .stat-card-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--slate-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .stat-card-value {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--navy);
+    font-family: 'DM Mono', monospace;
+    line-height: 1;
+  }
+  .stat-card-sub {
+    font-size: 12px;
+    color: var(--slate);
+    margin-top: 4px;
+  }
+  .genre-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .genre-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .genre-name {
+    font-size: 13px;
+    color: var(--navy);
+    width: 120px;
+    flex-shrink: 0;
+  }
+  .genre-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .genre-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal), #06b6d4);
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  .genre-count {
+    font-size: 12px;
+    color: var(--slate);
+    font-family: 'DM Mono', monospace;
+    width: 50px;
+    text-align: right;
+  }
+
+  /* RECOMMEND */
+  .recommend-form {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 28px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--navy);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.1);
+  }
+
+  /* ADD GAME */
+  .add-form {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    max-width: 700px;
+  }
+  .add-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .add-form-grid .full { grid-column: 1 / -1; }
+  .form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--navy);
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.15s;
+  }
+  .form-group textarea:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(13,148,136,0.1);
+  }
+
+  /* LOADING + EMPTY */
+  .loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--slate);
+  }
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--slate);
+  }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty h3 { font-size: 16px; color: var(--navy); margin-bottom: 6px; }
+  .empty p { font-size: 14px; }
+
+  /* ALERT */
+  .alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .alert.show { display: block; }
+  .alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; }
+  .alert-error { background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+
+  /* DOCS */
+  .docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .doc-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.15s;
+    display: block;
+  }
+  .doc-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: var(--teal); }
+  .doc-card-icon { font-size: 28px; margin-bottom: 12px; }
+  .doc-card h3 { font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+  .doc-card p { font-size: 13px; color: var(--slate); line-height: 1.5; }
+  .doc-card-url {
+    margin-top: 12px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--teal);
+    background: var(--teal-light);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy);
+    color: #64748b;
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    margin-top: 80px;
+  }
+  footer a { color: var(--teal-mid); text-decoration: none; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero-stats { gap: 24px; }
+    .add-form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">
+      <div class="nav-logo"><span>VG</span></div>
+      <span class="nav-title">Video Games Library API</span>
+    </a>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showSection('browse')">Browse</button>
+      <button class="nav-link" onclick="showSection('recommend')">Recommend</button>
+      <button class="nav-link" onclick="showSection('stats')">Stats</button>
+      <button class="nav-link" onclick="showSection('add')">Add Game</button>
+      <button class="nav-link" onclick="showSection('docs')">API Docs</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Video Games Library API</h1>
+  <p>Browse, search and discover over 16,700 video games. Get personalised recommendations based on your preferences.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num" id="heroTotal">—</div>
+      <div class="hero-stat-label">Games in Database</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">10</div>
+      <div class="hero-stat-label">API Endpoints</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">12</div>
+      <div class="hero-stat-label">Genres</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">31</div>
+      <div class="hero-stat-label">Platforms</div>
+    </div>
+  </div>
+  <div class="hero-actions">
+    <button class="btn btn-primary" onclick="showSection('browse')">Browse Games</button>
+    <button class="btn btn-outline" onclick="showSection('recommend')">Get Recommendations</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- BROWSE SECTION -->
+  <div class="section active" id="section-browse">
+    <div class="section-header">
+      <h2>Browse Games</h2>
+      <p>Filter and search through the entire database of video games.</p>
+    </div>
+
+    <div class="filters-bar">
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label>Search title</label>
+          <input type="text" id="f-search" placeholder="e.g. mario" oninput="debounceSearch()">
+        </div>
+        <div class="filter-group">
+          <label>Genre</label>
+          <select id="f-genre" onchange="applyFilters()">
+            <option value="">All genres</option>
+            <option>Action</option><option>Adventure</option><option>Fighting</option>
+            <option>Misc</option><option>Platform</option><option>Puzzle</option>
+            <option>Racing</option><option>Role-Playing</option><option>Shooter</option>
+            <option>Simulation</option><option>Sports</option><option>Strategy</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Platform</label>
+          <select id="f-platform" onchange="applyFilters()">
+            <option value="">All platforms</option>
+            <option>PS4</option><option>PS3</option><option>PS2</option><option>PS</option>
+            <option>PC</option><option>Wii</option><option>WiiU</option>
+            <option>X360</option><option>XOne</option><option>XB</option>
+            <option>DS</option><option>3DS</option><option>GBA</option>
+            <option>NES</option><option>SNES</option><option>N64</option><option>GC</option>
+            <option>PSP</option><option>PSV</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Age Rating</label>
+          <select id="f-rating" onchange="applyFilters()">
+            <option value="">All ratings</option>
+            <option>E</option><option>E10+</option><option>T</option><option>M</option><option>AO</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Min Score</label>
+          <input type="number" id="f-min" placeholder="e.g. 80" min="0" max="100" oninput="debounceSearch()">
+        </div>
+        <div class="filter-group">
+          <label>Sort by</label>
+          <select id="f-order" onchange="applyFilters()">
+            <option value="">Default</option>
+            <option value="-critic_score">Score ↓</option>
+            <option value="critic_score">Score ↑</option>
+            <option value="-release_year">Newest first</option>
+            <option value="release_year">Oldest first</option>
+            <option value="title">Title A-Z</option>
+            <option value="-title">Title Z-A</option>
+          </select>
+        </div>
+      </div>
+      <div class="filters-actions">
+        <div class="results-info" id="resultsInfo">Loading games...</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-sm btn-teal" onclick="applyFilters()">Apply Filters</button>
+          <button class="btn btn-sm" style="border:1px solid var(--border);background:var(--white)" onclick="clearFilters()">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="gamesContainer">
+      <div class="loading"><div class="loading-spinner"></div>Loading games...</div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <!-- RECOMMEND SECTION -->
+  <div class="section" id="section-recommend">
+    <div class="section-header">
+      <h2>Game Recommendations</h2>
+      <p>Tell us your preferences and we'll find the top 10 highest rated games for you.</p>
+    </div>
+
+    <div class="recommend-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Preferred Genre</label>
+          <select id="r-genre">
+            <option value="">Any genre</option>
+            <option>Action</option><option>Adventure</option><option>Fighting</option>
+            <option>Misc</option><option>Platform</option><option>Puzzle</option>
+            <option>Racing</option><option>Role-Playing</option><option>Shooter</option>
+            <option>Simulation</option><option>Sports</option><option>Strategy</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Preferred Platform</label>
+          <select id="r-platform">
+            <option value="">Any platform</option>
+            <option>PS4</option><option>PS3</option><option>PS2</option>
+            <option>PC</option><option>Wii</option><option>WiiU</option>
+            <option>X360</option><option>XOne</option>
+            <option>DS</option><option>3DS</option><option>GBA</option>
+            <option>NES</option><option>SNES</option><option>N64</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Age Rating</label>
+          <select id="r-age">
+            <option value="">Any rating</option>
+            <option>E</option><option>E10+</option><option>T</option><option>M</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Minimum Critic Score</label>
+          <input type="number" id="r-min" placeholder="e.g. 80" min="0" max="100">
+        </div>
+      </div>
+      <button class="btn btn-teal" onclick="getRecommendations()">Get My Recommendations</button>
+    </div>
+
+    <div id="recommendContainer"></div>
+  </div>
+
+  <!-- STATS SECTION -->
+  <div class="section" id="section-stats">
+    <div class="section-header">
+      <h2>Database Statistics</h2>
+      <p>An overview of the entire video games database.</p>
+    </div>
+    <div class="stats-grid" id="statsGrid">
+      <div class="loading"><div class="loading-spinner"></div>Loading stats...</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="statsCharts"></div>
+  </div>
+
+  <!-- ADD GAME SECTION -->
+  <div class="section" id="section-add">
+    <div class="section-header">
+      <h2>Add a New Game</h2>
+      <p>Submit a new video game entry to the database.</p>
+    </div>
+
+    <div class="add-form">
+      <div id="addAlert"></div>
+      <div class="add-form-grid">
+        <div class="form-group full">
+          <label>Game Title *</label>
+          <input type="text" id="a-title" placeholder="e.g. The Last of Us">
+        </div>
+        <div class="form-group">
+          <label>Genre *</label>
+          <select id="a-genre">
+            <option value="">Select genre</option>
+            <option>Action</option><option>Adventure</option><option>Fighting</option>
+            <option>Misc</option><option>Platform</option><option>Puzzle</option>
+            <option>Racing</option><option>Role-Playing</option><option>Shooter</option>
+            <option>Simulation</option><option>Sports</option><option>Strategy</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Platform *</label>
+          <input type="text" id="a-platform" placeholder="e.g. PS4">
+        </div>
+        <div class="form-group">
+          <label>Developer</label>
+          <input type="text" id="a-developer" placeholder="e.g. Naughty Dog">
+        </div>
+        <div class="form-group">
+          <label>Release Year</label>
+          <input type="number" id="a-year" placeholder="e.g. 2013" min="1970" max="2030">
+        </div>
+        <div class="form-group">
+          <label>Critic Score (0-100)</label>
+          <input type="number" id="a-score" placeholder="e.g. 95" min="0" max="100">
+        </div>
+        <div class="form-group">
+          <label>Age Rating</label>
+          <select id="a-rating">
+            <option value="">Select rating</option>
+            <option>E</option><option>E10+</option><option>T</option><option>M</option><option>AO</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-teal" onclick="addGame()">Add Game to Database</button>
+    </div>
+  </div>
+
+  <!-- DOCS SECTION -->
+  <div class="section" id="section-docs">
+    <div class="section-header">
+      <h2>API Documentation</h2>
+      <p>Explore the full API documentation and available endpoints.</p>
+    </div>
+    <div class="docs-grid">
+      <a class="doc-card" href="/swagger/" target="_blank">
+        <div class="doc-card-icon">⚡</div>
+        <h3>Swagger UI</h3>
+        <p>Interactive API documentation. Test all endpoints directly from your browser without any additional tools.</p>
+        <span class="doc-card-url">/swagger/</span>
+      </a>
+      <a class="doc-card" href="/redoc/" target="_blank">
+        <div class="doc-card-icon">📖</div>
+        <h3>ReDoc</h3>
+        <p>Clean, readable API reference documentation with detailed parameter descriptions and response examples.</p>
+        <span class="doc-card-url">/redoc/</span>
+      </a>
+      <a class="doc-card" href="/api/metadata/" target="_blank">
+        <div class="doc-card-icon">🗂</div>
+        <h3>Metadata Endpoint</h3>
+        <p>Returns all available genres, platforms and age ratings. Use this to discover valid filter values.</p>
+        <span class="doc-card-url">/api/metadata/</span>
+      </a>
+      <a class="doc-card" href="/api/stats/" target="_blank">
+        <div class="doc-card-icon">📊</div>
+        <h3>Stats Endpoint</h3>
+        <p>Database statistics including total games, average critic score and breakdown by genre.</p>
+        <span class="doc-card-url">/api/stats/</span>
+      </a>
+      <a class="doc-card" href="https://github.com/Zayed-Alhashmi/videogames-api" target="_blank">
+        <div class="doc-card-icon">💻</div>
+        <h3>GitHub Repository</h3>
+        <p>View the full source code, commit history, README setup instructions and API documentation PDF.</p>
+        <span class="doc-card-url">github.com/Zayed-Alhashmi</span>
+      </a>
+      <div class="card">
+        <div style="font-size:28px;margin-bottom:12px;">🔗</div>
+        <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:6px;">Base URL</h3>
+        <p style="font-size:13px;color:var(--slate);margin-bottom:12px;">All API endpoints are available at:</p>
+        <code style="font-family:'DM Mono',monospace;font-size:12px;background:var(--teal-light);color:var(--teal);padding:6px 10px;border-radius:4px;display:block">/api/games/<br>/api/recommend/<br>/api/metadata/<br>/api/stats/</code>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Powered by Django REST Framework · <a href="https://github.com/Zayed-Alhashmi/videogames-api">GitHub</a> · <a href="/swagger/">API Docs</a></p>
+</footer>
+
+<script>
+  const API = '';
+  let currentPage = 1;
+  let currentFilters = {};
+  let searchTimeout;
+
+  // Section navigation
+  function showSection(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    event.target.classList.add('active');
+    if (name === 'stats') loadStats();
+  }
+
+  // Debounced search
+  function debounceSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => applyFilters(), 500);
+  }
+
+  // Apply filters and load games
+  function applyFilters(page = 1) {
+    currentPage = page;
+    const params = new URLSearchParams();
+    const search = document.getElementById('f-search').value.trim();
+    const genre = document.getElementById('f-genre').value;
+    const platform = document.getElementById('f-platform').value;
+    const rating = document.getElementById('f-rating').value;
+    const min = document.getElementById('f-min').value;
+    const order = document.getElementById('f-order').value;
+    if (search) params.append('search', search);
+    if (genre) params.append('genre', genre);
+    if (platform) params.append('platform', platform);
+    if (rating) params.append('age_rating', rating);
+    if (min) params.append('min_score', min);
+    if (order) params.append('ordering', order);
+    params.append('page', page);
+    loadGames(params);
+  }
+
+  function clearFilters() {
+    document.getElementById('f-search').value = '';
+    document.getElementById('f-genre').value = '';
+    document.getElementById('f-platform').value = '';
+    document.getElementById('f-rating').value = '';
+    document.getElementById('f-min').value = '';
+    document.getElementById('f-order').value = '';
+    applyFilters();
+  }
+
+  // Load games from API
+  async function loadGames(params) {
+    const container = document.getElementById('gamesContainer');
+    container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Loading games...</div>';
+    try {
+      const res = await fetch(`${API}/api/games/?${params}`);
+      const data = await res.json();
+      const results = data.results || [];
+      const count = data.count || 0;
+      document.getElementById('heroTotal').textContent = count.toLocaleString();
+      document.getElementById('resultsInfo').innerHTML = `Showing <strong>${results.length}</strong> of <strong>${count.toLocaleString()}</strong> games`;
+      if (results.length === 0) {
+        container.innerHTML = '<div class="empty"><div class="empty-icon">🎮</div><h3>No games found</h3><p>Try adjusting your filters.</p></div>';
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+      container.innerHTML = '<div class="card-grid">' + results.map(renderGameCard).join('') + '</div>';
+      renderPagination(data, params);
+    } catch (e) {
+      container.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Could not connect to API</h3><p>Make sure the Django server is running.</p></div>';
+    }
+  }
+
+  function renderGameCard(game) {
+    const score = game.critic_score;
+    const scoreBar = score ? `<div class="game-card-score"><div class="score-bar-bg"><div class="score-bar-fill" style="width:${score}%"></div></div><span class="score-num">${score}</span></div>` : '';
+    const ratingColors = { E: 'tag-teal', T: 'tag-navy', M: 'tag-orange', 'E10+': 'tag-teal', AO: 'tag-orange' };
+    const ratingTag = game.age_rating ? `<span class="tag ${ratingColors[game.age_rating] || 'tag-slate'}">${game.age_rating}</span>` : '';
+    return `<div class="game-card">
+      <div class="game-card-title">${game.title}</div>
+      <div class="game-card-meta">
+        ${game.genre ? `<span class="tag tag-teal">${game.genre}</span>` : ''}
+        ${game.platform ? `<span class="tag tag-navy">${game.platform}</span>` : ''}
+        ${game.release_year ? `<span class="tag tag-slate">${game.release_year}</span>` : ''}
+        ${ratingTag}
+      </div>
+      ${game.developer ? `<div style="font-size:12px;color:var(--slate-light);margin-bottom:4px;">${game.developer}</div>` : ''}
+      ${scoreBar}
+    </div>`;
+  }
+
+  function renderPagination(data, params) {
+    const pag = document.getElementById('pagination');
+    if (!data.next && !data.previous) { pag.innerHTML = ''; return; }
+    const totalPages = Math.ceil(data.count / 20);
+    let html = '';
+    if (data.previous) html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})">← Prev</button>`;
+    const start = Math.max(1, currentPage - 2);
+    const end = Math.min(totalPages, currentPage + 2);
+    for (let i = start; i <= end; i++) {
+      html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+    if (data.next) html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})">Next →</button>`;
+    pag.innerHTML = html;
+  }
+
+  function goToPage(page) {
+    applyFilters(page);
+    window.scrollTo({ top: 400, behavior: 'smooth' });
+  }
+
+  // Recommendations
+  async function getRecommendations() {
+    const container = document.getElementById('recommendContainer');
+    container.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Finding your recommendations...</div>';
+    const params = new URLSearchParams();
+    const genre = document.getElementById('r-genre').value;
+    const platform = document.getElementById('r-platform').value;
+    const age = document.getElementById('r-age').value;
+    const min = document.getElementById('r-min').value;
+    if (genre) params.append('genre', genre);
+    if (platform) params.append('platform', platform);
+    if (age) params.append('age_rating', age);
+    if (min) params.append('min_score', min);
+    try {
+      const res = await fetch(`${API}/api/recommend/?${params}`);
+      const data = await res.json();
+      if (res.status === 404) {
+        container.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><h3>No games found</h3><p>Try broadening your preferences.</p></div>';
+        return;
+      }
+      const games = data.recommendations || [];
+      container.innerHTML = `
+        <div style="margin-bottom:16px;">
+          <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px;">${data.message}</div>
+          <div style="font-size:13px;color:var(--slate);">Ranked by critic score from highest to lowest.</div>
+        </div>
+        <div class="card-grid">${games.map((g, i) => `
+          <div class="game-card" style="position:relative;">
+            <div style="position:absolute;top:14px;right:14px;width:28px;height:28px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--teal-mid);font-family:'DM Mono',monospace;">${i + 1}</div>
+            ${renderGameCard(g).replace('<div class="game-card">', '').replace('</div>', '')}
+          </div>`).join('')}
+        </div>`;
+    } catch (e) {
+      container.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Could not connect to API</h3><p>Make sure the Django server is running.</p></div>';
+    }
+  }
+
+  // Stats
+  async function loadStats() {
+    const grid = document.getElementById('statsGrid');
+    const charts = document.getElementById('statsCharts');
+    grid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Loading...</div>';
+    try {
+      const res = await fetch(`${API}/api/stats/`);
+      const data = await res.json();
+      grid.innerHTML = `
+        <div class="stat-card"><div class="stat-card-label">Total Games</div><div class="stat-card-value">${data.total_games?.toLocaleString()}</div><div class="stat-card-sub">In database</div></div>
+        <div class="stat-card"><div class="stat-card-label">Total Reviews</div><div class="stat-card-value">${data.total_reviews}</div><div class="stat-card-sub">User submitted</div></div>
+        <div class="stat-card"><div class="stat-card-label">Avg Critic Score</div><div class="stat-card-value">${data.average_critic_score}</div><div class="stat-card-sub">Out of 100</div></div>
+        <div class="stat-card"><div class="stat-card-label">Top Rated Game</div><div class="stat-card-value" style="font-size:16px;line-height:1.3">${data.highest_rated_game?.title}</div><div class="stat-card-sub">${data.highest_rated_game?.critic_score} · ${data.highest_rated_game?.platform}</div></div>
+        <div class="stat-card"><div class="stat-card-label">Most Common Genre</div><div class="stat-card-value" style="font-size:20px">${data.most_common_genre?.genre}</div><div class="stat-card-sub">${data.most_common_genre?.count?.toLocaleString()} games</div></div>
+        <div class="stat-card"><div class="stat-card-label">Top Platform</div><div class="stat-card-value" style="font-size:20px">${data.most_common_platform?.platform}</div><div class="stat-card-sub">${data.most_common_platform?.count?.toLocaleString()} games</div></div>
+      `;
+      if (data.games_per_genre) {
+        const max = data.games_per_genre[0]?.count || 1;
+        charts.innerHTML = `<div class="card" style="grid-column:1/-1"><h3 style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:16px;">Games by Genre</h3><div class="genre-list">${data.games_per_genre.map(g => `<div class="genre-row"><span class="genre-name">${g.genre}</span><div class="genre-bar-bg"><div class="genre-bar-fill" style="width:${(g.count/max*100)}%"></div></div><span class="genre-count">${g.count.toLocaleString()}</span></div>`).join('')}</div></div>`;
+      }
+    } catch (e) {
+      grid.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Could not load stats</h3></div>';
+    }
+  }
+
+  // Add game
+  async function addGame() {
+    const alertEl = document.getElementById('addAlert');
+    alertEl.className = 'alert';
+    const title = document.getElementById('a-title').value.trim();
+    const genre = document.getElementById('a-genre').value;
+    const platform = document.getElementById('a-platform').value.trim();
+    if (!title || !genre || !platform) {
+      alertEl.className = 'alert alert-error show';
+      alertEl.textContent = 'Title, Genre and Platform are required.';
+      return;
+    }
+    const body = { title, genre, platform };
+    const dev = document.getElementById('a-developer').value.trim();
+    const year = document.getElementById('a-year').value;
+    const score = document.getElementById('a-score').value;
+    const rating = document.getElementById('a-rating').value;
+    if (dev) body.developer = dev;
+    if (year) body.release_year = parseInt(year);
+    if (score) body.critic_score = parseFloat(score);
+    if (rating) body.age_rating = rating;
+    try {
+      const res = await fetch(`${API}/api/games/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (res.status === 201) {
+        alertEl.className = 'alert alert-success show';
+        alertEl.textContent = `"${data.title}" was added successfully with ID ${data.id}!`;
+        document.getElementById('a-title').value = '';
+        document.getElementById('a-genre').value = '';
+        document.getElementById('a-platform').value = '';
+        document.getElementById('a-developer').value = '';
+        document.getElementById('a-year').value = '';
+        document.getElementById('a-score').value = '';
+        document.getElementById('a-rating').value = '';
+      } else {
+        alertEl.className = 'alert alert-error show';
+        alertEl.textContent = 'Error: ' + JSON.stringify(data);
+      }
+    } catch (e) {
+      alertEl.className = 'alert alert-error show';
+      alertEl.textContent = 'Could not connect to API. Make sure the server is running.';
+    }
+  }
+
+  // Init
+  applyFilters();
+  fetch(`${API}/api/stats/`).then(r => r.json()).then(d => {
+    if (d.total_games) document.getElementById('heroTotal').textContent = d.total_games.toLocaleString();
+  }).catch(() => {});
+</script>
+</body>
+</html>
