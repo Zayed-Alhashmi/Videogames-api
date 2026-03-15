@@ -8,8 +8,8 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Video Games Library API",
         default_version='v1',
-        description="A REST API for browsing and reviewing video games. Built for COMP3011 Web Services module.",
-        contact=openapi.Contact(email="sc23za@leeds.ac.uk"),
+        description="A RESTful web service providing access to a database of over 16,000 video games. Supports full CRUD operations, advanced filtering by genre, platform, critic score and release year, personalised game recommendations, and database statistics. Built using Django REST Framework with SQLite.",
+        contact=openapi.Contact(email="sc22zkom@leeds.ac.uk"),
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
