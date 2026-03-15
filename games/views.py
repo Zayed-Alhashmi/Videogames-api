@@ -16,6 +16,7 @@ class GameList(APIView):
         min_score = request.query_params.get('min_score', None)
         max_score = request.query_params.get('max_score', None)
         search = request.query_params.get('search', None)
+        ordering = request.query_params.get('ordering', None)
 
         if genre:
             games = games.filter(genre__icontains=genre)
@@ -46,21 +47,17 @@ class GameList(APIView):
         if search:
             games = games.filter(title__icontains=search)
 
-        serializer = GameSerializer(games, many=True)
-        return Response({
-            'count': games.count(),
-            'filters_applied': {
-                'genre': genre,
-                'platform': platform,
-                'age_rating': age_rating,
-                'developer': developer,
-                'year': year,
-                'min_score': min_score,
-                'max_score': max_score,
-                'search': search
-            },
-            'results': serializer.data
-        }, status=status.HTTP_200_OK)
+        valid_ordering = ['critic_score', '-critic_score', 'release_year', '-release_year', 'title', '-title']
+        if ordering and ordering in valid_ordering:
+            games = games.order_by(ordering)
+
+        from rest_framework.pagination import PageNumberPagination
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        result_page = paginator.paginate_queryset(games, request)
+
+        serializer = GameSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = GameSerializer(data=request.data)
@@ -185,5 +182,47 @@ class GameMetadata(APIView):
             'platforms': list(platforms),
             'age_ratings': list(age_ratings),
         }, status=status.HTTP_200_OK)
+
+class GameStats(APIView):
+    def get(self, request):
+        from django.db.models import Avg, Max, Min, Count
+
+        total_games = Game.objects.count()
+        total_reviews = Review.objects.count()
+
+        avg_score = Game.objects.filter(
+            critic_score__isnull=False
+        ).aggregate(Avg('critic_score'))['critic_score__avg']
+
+        highest_rated = Game.objects.filter(
+            critic_score__isnull=False
+        ).order_by('-critic_score').first()
+
+        most_common_genre = Game.objects.values('genre').annotate(
+            count=Count('genre')
+        ).order_by('-count').first()
+
+        most_common_platform = Game.objects.values('platform').annotate(
+            count=Count('platform')
+        ).order_by('-count').first()
+
+        games_per_genre = Game.objects.values('genre').annotate(
+            count=Count('genre')
+        ).order_by('-count')
+
+        return Response({
+            'total_games': total_games,
+            'total_reviews': total_reviews,
+            'average_critic_score': round(avg_score, 2) if avg_score else None,
+            'highest_rated_game': {
+                'title': highest_rated.title,
+                'critic_score': highest_rated.critic_score,
+                'platform': highest_rated.platform
+            } if highest_rated else None,
+            'most_common_genre': most_common_genre,
+            'most_common_platform': most_common_platform,
+            'games_per_genre': list(games_per_genre)
+        }, status=status.HTTP_200_OK)
+
 
 
