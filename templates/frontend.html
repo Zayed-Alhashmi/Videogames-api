@@ -492,6 +492,61 @@
     box-shadow: 0 0 0 3px rgba(13,148,136,0.1);
   }
 
+  /* REVIEWS */
+  .reviews-section {
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+    display: none;
+  }
+  .reviews-section.open { display: block; }
+  .review-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .review-item:last-child { border-bottom: none; }
+  .review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .review-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .review-rating {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--teal);
+    font-family: 'DM Mono', monospace;
+    background: var(--teal-light);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .review-comment {
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.4;
+  }
+  .reviews-toggle {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--slate);
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    text-align: left;
+  }
+  .reviews-toggle:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-light); }
+
   /* LOADING + EMPTY */
   .loading {
     text-align: center;
@@ -960,6 +1015,10 @@
       </div>
       ${game.developer ? `<div style="font-size:12px;color:var(--slate-light);margin-bottom:4px;">${game.developer}</div>` : ''}
       ${scoreBar}
+      <button class="reviews-toggle" onclick="toggleReviews(this, ${game.id})">💬 Show reviews</button>
+      <div class="reviews-section" id="reviews-${game.id}">
+        <div class="loading" style="padding:10px 0;"><div class="loading-spinner" style="width:18px;height:18px;border-width:2px;"></div></div>
+      </div>
     </div>`;
   }
 
@@ -1090,6 +1149,37 @@
     } catch (e) {
       alertEl.className = 'alert alert-error show';
       alertEl.textContent = 'Could not connect to API. Make sure the server is running.';
+    }
+  }
+
+  // Toggle reviews for a game card
+  async function toggleReviews(btn, gameId) {
+    const section = document.getElementById(`reviews-${gameId}`);
+    const isOpen = section.classList.contains('open');
+    if (isOpen) {
+      section.classList.remove('open');
+      btn.textContent = '💬 Show reviews';
+      return;
+    }
+    section.classList.add('open');
+    btn.textContent = '💬 Hide reviews';
+    try {
+      const res = await fetch(`${API}/api/games/${gameId}/reviews/`);
+      const reviews = await res.json();
+      if (!reviews.length) {
+        section.innerHTML = '<div style="font-size:12px;color:var(--slate-light);padding:6px 0;">No reviews yet.</div>';
+        return;
+      }
+      section.innerHTML = reviews.map(r => `
+        <div class="review-item">
+          <div class="review-header">
+            <span class="review-name">👤 ${r.reviewer_name}</span>
+            <span class="review-rating">${r.rating}/10</span>
+          </div>
+          <div class="review-comment">${r.comment}</div>
+        </div>`).join('');
+    } catch(e) {
+      section.innerHTML = '<div style="font-size:12px;color:var(--slate-light);padding:6px 0;">Could not load reviews.</div>';
     }
   }
 
