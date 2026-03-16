@@ -1,57 +1,56 @@
 # Video Games Library API
 
-A RESTful web service providing access to a database of over 16,000 video games. Supports full CRUD operations, advanced filtering, personalised game recommendations, and database statistics. Built using Django REST Framework with SQLite.
-**Live API:** https://ZayedAlhashmi.pythonanywhere.com
+A RESTful web service built with Django REST Framework, giving programmatic access to a database of over 16,700 video games. Supports full CRUD, filtering, search, personalised recommendations and statistics.
+
+**Live:** https://ZayedAlhashmi.pythonanywhere.com
+
+---
 
 ## Tech Stack
 
-- Python 3
-- Django 6
-- Django REST Framework
+- Python 3 · Django 6 · Django REST Framework
 - SQLite
-- drf-yasg (Swagger/ReDoc documentation)
+- drf-yasg (Swagger UI + ReDoc)
 
-## Getting Started
+---
 
-### 1. Clone the repository
+## Setup
+
 ```bash
 git clone https://github.com/Zayed-Alhashmi/videogames-api.git
 cd videogames-api
-```
-
-### 2. Install dependencies
-```bash
 pip install django djangorestframework drf-yasg
-```
-
-### 3. Run database migrations
-```bash
 python manage.py migrate
 ```
 
-### 4. Import the game data
-```bash
-python seed.py
-```
+Place `Video_Games_Sales_as_at_22_Dec_2016.csv` in the project root, then:
 
-### 5. Create a superuser (optional)
 ```bash
-python manage.py createsuperuser
-```
-
-### 6. Run the development server
-```bash
+python seed.py          # imports 16,717 games
+python seed_reviews.py  # adds 25 sample reviews (optional)
+python manage.py createsuperuser  # optional
 python manage.py runserver
 ```
 
-The API will be available at: http://127.0.0.1:8000
+- Frontend dashboard: http://127.0.0.1:8000
+- API root: http://127.0.0.1:8000/api/
+
+---
+
+## Frontend
+
+The root URL `/` serves a visual dashboard where you can browse and filter games, get recommendations, view statistics, add new games, and read reviews — all talking to the API in real time.
+
+---
 
 ## API Documentation
 
-Interactive API documentation is available at:
+| | Local | Live |
+|--|--|--|
+| Swagger UI | http://127.0.0.1:8000/swagger/ | https://ZayedAlhashmi.pythonanywhere.com/swagger/ |
+| ReDoc | http://127.0.0.1:8000/redoc/ | https://ZayedAlhashmi.pythonanywhere.com/redoc/ |
 
-- **Swagger UI**: http://127.0.0.1:8000/swagger/
-- **ReDoc**: http://127.0.0.1:8000/redoc/
+---
 
 ## Endpoints
 
@@ -59,93 +58,80 @@ Interactive API documentation is available at:
 
 | Method | URL | Description |
 |--------|-----|-------------|
-| GET | /api/games/ | List all games (paginated, 20 per page) |
-| POST | /api/games/ | Add a new game |
-| GET | /api/games/\<id\>/ | Get a single game by ID |
-| PUT | /api/games/\<id\>/ | Update a game by ID |
-| DELETE | /api/games/\<id\>/ | Delete a game by ID |
+| GET | `/api/games/` | List all games — paginated, 20 per page |
+| POST | `/api/games/` | Create a new game |
+| GET | `/api/games/<id>/` | Get a single game with its reviews |
+| PUT | `/api/games/<id>/` | Update a game |
+| DELETE | `/api/games/<id>/` | Delete a game and its reviews |
 
 ### Reviews
 
 | Method | URL | Description |
 |--------|-----|-------------|
-| GET | /api/games/\<id\>/reviews/ | Get all reviews for a game |
-| POST | /api/games/\<id\>/reviews/ | Add a review to a game |
+| GET | `/api/games/<id>/reviews/` | List reviews for a game |
+| POST | `/api/games/<id>/reviews/` | Add a review |
 
-### Special Endpoints
+### Other
 
 | Method | URL | Description |
 |--------|-----|-------------|
-| GET | /api/recommend/ | Get personalised game recommendations |
-| GET | /api/metadata/ | Get all available genres, platforms and age ratings |
-| GET | /api/stats/ | Get database statistics |
+| GET | `/api/recommend/` | Top 10 games matching your preferences |
+| GET | `/api/metadata/` | All valid genres, platforms and age ratings |
+| GET | `/api/stats/` | Database statistics |
 
-## Filtering & Search
+---
 
-The `/api/games/` endpoint supports the following query parameters:
+## Filtering
 
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| genre | Filter by genre | ?genre=Action |
-| platform | Filter by platform | ?platform=PS4 |
-| age_rating | Filter by age rating | ?age_rating=M |
-| developer | Filter by developer | ?developer=Nintendo |
-| year | Filter by release year | ?year=2006 |
-| min_score | Minimum critic score | ?min_score=90 |
-| max_score | Maximum critic score | ?max_score=98 |
-| search | Search by title keyword | ?search=mario |
-| ordering | Sort results | ?ordering=-critic_score |
-| page | Page number | ?page=2 |
+`/api/games/` accepts the following query parameters:
 
-### Ordering options
+| Parameter | Example |
+|-----------|---------|
+| `genre` | `?genre=Action` |
+| `platform` | `?platform=PS4` |
+| `age_rating` | `?age_rating=M` |
+| `developer` | `?developer=Nintendo` |
+| `year` | `?year=2006` |
+| `min_score` | `?min_score=90` |
+| `max_score` | `?max_score=98` |
+| `search` | `?search=mario` |
+| `ordering` | `?ordering=-critic_score` |
+| `page` | `?page=2` |
 
-| Value | Description |
-|-------|-------------|
-| critic_score | Critic score ascending |
-| -critic_score | Critic score descending |
-| release_year | Release year ascending |
-| -release_year | Release year descending |
-| title | Title A-Z |
-| -title | Title Z-A |
-
-### Example combined requests
+Ordering values: `critic_score`, `-critic_score`, `release_year`, `-release_year`, `title`, `-title`
 
 ```
 GET /api/games/?genre=Action&platform=PS4
 GET /api/games/?min_score=90&ordering=-critic_score
-GET /api/games/?search=mario&ordering=release_year
-GET /api/recommend/?genre=Role-Playing&platform=PS3
-GET /api/recommend/?genre=Sports&min_score=80
+GET /api/recommend/?genre=Role-Playing&min_score=85
 ```
 
-## Recommendation Endpoint
+---
 
-Returns the top 10 highest rated games matching your preferences.
-
-| Parameter | Description | Example |
-|-----------|-------------|---------|
-| genre | Preferred genre | ?genre=Action |
-| platform | Preferred platform | ?platform=PS4 |
-| age_rating | Age rating preference | ?age_rating=M |
-| min_score | Minimum critic score | ?min_score=80 |
-
-## HTTP Status Codes
+## Status Codes
 
 | Code | Meaning |
 |------|---------|
-| 200 | OK — request successful |
-| 201 | Created — new resource created successfully |
-| 400 | Bad Request — invalid data provided |
-| 404 | Not Found — resource does not exist |
+| 200 | OK |
+| 201 | Created |
+| 400 | Bad Request |
+| 404 | Not Found |
 
-## Admin Panel
+---
 
-Access the Django admin panel at http://127.0.0.1:8000/admin/
+## Admin
+
+- Local: http://127.0.0.1:8000/admin/
+- Live: https://ZayedAlhashmi.pythonanywhere.com/admin/
+
+---
 
 ## Dataset
 
-This project uses the [Video Game Sales with Ratings](https://www.kaggle.com/) dataset from Kaggle, containing over 16,000 video games with critic scores, platforms, genres and age ratings.
+[Video Game Sales with Ratings](https://www.kaggle.com/datasets/rush4ratio/video-game-sales-with-ratings) — Kaggle. 16,700+ games with critic scores, platforms, genres and age ratings.
+
+---
 
 ## Author
 
-Zayed Alhashmi — University of Leeds — COMP3011 Web Services 2025/2026
+Zayed Alhashmi
