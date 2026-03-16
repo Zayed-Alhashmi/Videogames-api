@@ -1,6 +1,7 @@
 # Video Games Library API
 
 A RESTful web service providing access to a database of over 16,000 video games. Supports full CRUD operations, advanced filtering, personalised game recommendations, and database statistics. Built using Django REST Framework with SQLite.
+**Live API:** https://ZayedAlhashmi.pythonanywhere.com
 
 ## Tech Stack
 
