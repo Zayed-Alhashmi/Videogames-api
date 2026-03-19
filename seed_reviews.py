@@ -6,9 +6,11 @@ django.setup()
 
 from games.models import Game, Review
 
+# Removes any existing reviews before inserting the sample data
 Review.objects.all().delete()
 print("Cleared existing reviews...")
 
+# Each entry is a tuple of (game_id, reviewer_name, rating, comment)
 reviews = [
     (1, "JohnGamer92", 8, "Amazing party game, perfect for family gatherings!"),
     (2, "RetroKing", 9, "A true classic. Every gamer should play this at least once."),
@@ -38,6 +40,7 @@ reviews = [
 ]
 
 added = 0
+# Loops through each review entry, finds the matching game and saves the review to the database
 for game_id, reviewer, rating, comment in reviews:
     try:
         game = Game.objects.get(pk=game_id)

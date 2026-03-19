@@ -9,6 +9,7 @@ from games.models import Game
 
 CSV_FILE = 'Video_Games_Sales_as_at_22_Dec_2016.csv'
 
+# Clears all existing games then reads the CSV file and imports each valid row into the database
 def run():
     print("Clearing existing games...")
     Game.objects.all().delete()
@@ -24,6 +25,7 @@ def run():
             platform = row.get('Platform', '').strip()
             genre = row.get('Genre', '').strip()
 
+            # Skips any row that is missing a name, platform or genre
             if not name or not platform or not genre:
                 skipped += 1
                 continue

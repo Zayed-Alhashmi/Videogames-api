@@ -42,6 +42,7 @@ class GameList(APIView):
             400: openapi.Response(description="Invalid filter parameters"),
         }
     )
+    # Returns a paginated list of games, filtered and ordered based on query parameters
     def get(self, request):
         games = Game.objects.all()
         genre = request.query_params.get('genre', None)
@@ -114,6 +115,7 @@ class GameList(APIView):
             400: openapi.Response(description="Invalid data provided"),
         }
     )
+    # Creates a new game record using the data submitted in the request body
     def post(self, request):
         serializer = GameSerializer(data=request.data)
         if serializer.is_valid():
@@ -123,6 +125,7 @@ class GameList(APIView):
 
 
 class GameDetail(APIView):
+    # Looks up a game by its primary key and returns None if it does not exist
     def get_object(self, pk):
         try:
             return Game.objects.get(pk=pk)
@@ -137,6 +140,7 @@ class GameDetail(APIView):
             404: openapi.Response(description="Game not found"),
         }
     )
+    # Returns the full details of one game including its reviews
     def get(self, request, pk):
         game = self.get_object(pk)
         if game is None:
@@ -154,6 +158,7 @@ class GameDetail(APIView):
             404: openapi.Response(description="Game not found"),
         }
     )
+    # Updates all fields of an existing game with the data sent in the request
     def put(self, request, pk):
         game = self.get_object(pk)
         if game is None:
@@ -172,6 +177,7 @@ class GameDetail(APIView):
             404: openapi.Response(description="Game not found"),
         }
     )
+    # Deletes the game and all reviews linked to it from the database
     def delete(self, request, pk):
         game = self.get_object(pk)
         if game is None:
@@ -189,6 +195,7 @@ class ReviewList(APIView):
             404: openapi.Response(description="Game not found"),
         }
     )
+    # Returns all reviews that have been submitted for a specific game
     def get(self, request, pk):
         game = Game.objects.filter(pk=pk).first()
         if game is None:
@@ -220,6 +227,7 @@ class ReviewList(APIView):
             404: openapi.Response(description="Game not found"),
         }
     )
+    # Saves a new review and links it to the game specified in the URL
     def post(self, request, pk):
         game = Game.objects.filter(pk=pk).first()
         if game is None:
@@ -257,6 +265,7 @@ class GameRecommendation(APIView):
             404: openapi.Response(description="No games found matching preferences"),
         }
     )
+    # Applies the given filters and returns the top 10 games ordered by critic score
     def get(self, request):
         genre = request.query_params.get('genre', None)
         platform = request.query_params.get('platform', None)
@@ -298,6 +307,7 @@ class GameMetadata(APIView):
             200: openapi.Response(description="Available filter values returned successfully"),
         }
     )
+    # Returns all distinct genres, platforms and age ratings stored in the database
     def get(self, request):
         genres = Game.objects.exclude(genre__isnull=True).values_list('genre', flat=True).distinct().order_by('genre')
         platforms = Game.objects.exclude(platform__isnull=True).values_list('platform', flat=True).distinct().order_by('platform')
@@ -318,6 +328,7 @@ class GameStats(APIView):
             200: openapi.Response(description="Statistics returned successfully"),
         }
     )
+    # Calculates and returns summary statistics for the entire games database
     def get(self, request):
         from django.db.models import Avg, Max, Min, Count
         total_games = Game.objects.count()

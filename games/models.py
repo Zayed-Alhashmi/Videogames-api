@@ -1,5 +1,6 @@
 from django.db import models
 
+# Stores all details for a single video game entry
 class Game(models.Model):
     title = models.CharField(max_length=200)
     genre = models.CharField(max_length=100)
@@ -9,14 +10,17 @@ class Game(models.Model):
     critic_score = models.FloatField(null=True, blank=True)
     age_rating = models.CharField(max_length=10, null=True, blank=True)
 
+    # Returns the game title as the string representation of this object
     def __str__(self):
         return self.title
 
+# Stores a user review linked to a specific game
 class Review(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='reviews')
     reviewer_name = models.CharField(max_length=100)
     rating = models.IntegerField()
     comment = models.TextField()
 
+    # Returns a readable label showing the reviewer name and the game they reviewed
     def __str__(self):
         return f"{self.reviewer_name} - {self.game.title}"
